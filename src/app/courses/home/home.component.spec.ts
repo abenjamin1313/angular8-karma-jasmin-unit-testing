@@ -21,6 +21,11 @@ describe('HomeComponent', () => {
   let fixture: ComponentFixture<HomeComponent>;
   let component:HomeComponent;
   let el: DebugElement;
+  let coursesService: any;
+  const beginnerCourses = setupCourses()
+        .filter(course => course.category == 'BEGINNER');
+  const advancedCourses = setupCourses()
+        .filter(course => course.category == 'ADVANCED');
 
   beforeEach(async(() => {
 
@@ -39,6 +44,7 @@ describe('HomeComponent', () => {
             fixture = TestBed.createComponent(HomeComponent);
             component = fixture.componentInstance;
             el = fixture.debugElement;
+            coursesService = TestBed.get(CoursesService);
         });
   }));
 
@@ -51,29 +57,48 @@ describe('HomeComponent', () => {
 
   it("should display only beginner courses", () => {
 
-    pending();
+    coursesService.findAllCourses.and.returnValue(of(beginnerCourses));
+    fixture.detectChanges();
 
+    const tabs =  el.queryAll(By.css('.mat-tab-label'));
+    expect(tabs.length).toBe(1, "Unexpected number of tabs found");
   });
 
 
   it("should display only advanced courses", () => {
+    coursesService.findAllCourses.and.returnValue(of(advancedCourses));
+    fixture.detectChanges();
 
-      pending();
-
+    const tabs =  el.queryAll(By.css('.mat-tab-label'));
+    expect(tabs.length).toBe(1, "Unexpected number of tabs found");
   });
 
 
   it("should display both tabs", () => {
+    coursesService.findAllCourses.and.returnValue(of(setupCourses()));
+    fixture.detectChanges();
 
-    pending();
+    const tabs =  el.queryAll(By.css('.mat-tab-label'));
+    expect(tabs.length).toBe(2, "Expected Two Tabs");
 
   });
 
 
-  it("should display advanced courses when tab clicked", () => {
+  it("should display advanced courses when tab clicked", (done: DoneFn) => {
+    coursesService.findAllCourses.and.returnValue(of(setupCourses()));
+    fixture.detectChanges();
+    const tabs =  el.queryAll(By.css('.mat-tab-label'));
 
-    pending();
+    click(tabs[1]);
+    fixture.detectChanges();
 
+    setTimeout(() => {
+        const cardTitles =  el.queryAll(By.css('.mat-card-title'));
+        expect(cardTitles.length).toBeGreaterThan(0, "Could not find card title");
+        expect(cardTitles[0].nativeElement.textContent).toContain("Angular Security Course");
+
+        done();
+    }, 500);
   });
 
 });
