@@ -1,6 +1,3 @@
-
-
-
 import {CollectionViewer, DataSource} from "@angular/cdk/collections";
 import {Observable, BehaviorSubject, of} from "rxjs";
 import {Lesson} from "../model/lesson";
